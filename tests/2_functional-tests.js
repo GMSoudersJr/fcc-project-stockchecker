@@ -22,6 +22,14 @@ suite('Functional Tests', function() {
         .get('/api/stock-prices')
         .query({stock: 'goog'})
         .end(function(err, res){
+         assert.equal(res.status, 200);
+         assert.isObject(res.body)
+         assert.property(res.body, "stockData")
+         assert.property(res.body.stockData, "stock")
+         assert.property(res.body.stockData, "price")
+         assert.equal(res.body.stockData.stock, "GOOG")
+         assert.isString(res.body.stockData.price, "the stock price should be a string")
+         assert.isNumber(res.body.stockData.likes)
           
           //complete this one too
           
@@ -30,18 +38,93 @@ suite('Functional Tests', function() {
       });
       
       test('1 stock with like', function(done) {
-        
+        chai.request(server)
+          .get('/api/stock-prices')
+          .query({stock:'nflx', like:'true'})
+          .end(function(err, res){
+            assert.equal(res.status, 200)
+            assert.isObject(res.body)
+            assert.property(res.body, "stockData")
+            assert.property(res.body.stockData, "stock")
+            assert.property(res.body.stockData, "price")
+            assert.property(res.body.stockData, "likes")
+            assert.equal(res.body.stockData.stock, "NFLX")
+            assert.equal(res.body.stockData.likes, 1)          
+          done();
+        });
+                
       });
-      
       test('1 stock with like again (ensure likes arent double counted)', function(done) {
+        chai.request(server)
+          .get('/api/stock-prices')
+          .query({stock:'nflx', like:'true'})
+          .end(function(err, res){
+            assert.equal(res.status, 200)
+            assert.isObject(res.body)
+            assert.property(res.body, "stockData")
+            assert.property(res.body.stockData, "stock")
+            assert.property(res.body.stockData, "price")
+            assert.property(res.body.stockData, "likes")
+            assert.equal(res.body.stockData.stock, "NFLX")
+            assert.equal(res.body.stockData.likes, 1)          
+          done();
+        });
         
       });
       
       test('2 stocks', function(done) {
+        chai.request(server)
+          .get('/api/stock-prices')
+          .query({stock:['goog', 'msft']})
+          .end(function(err, res){
+            assert.equal(res.status, 200)
+            assert.isObject(res.body)
+            assert.property(res.body, "stockData")
+            assert.isArray(res.body.stockData)
+            assert.property(res.body.stockData[0], "stock")
+            assert.property(res.body.stockData[0], "price")
+            assert.property(res.body.stockData[0], "rel_likes")
+            assert.property(res.body.stockData[1], "stock")
+            assert.property(res.body.stockData[1], "price")
+            assert.property(res.body.stockData[1], "rel_likes")
+            assert.isString(res.body.stockData[0].stock)
+            assert.isString(res.body.stockData[0].price)
+            assert.isNumber(res.body.stockData[0].rel_likes)
+            assert.isString(res.body.stockData[1].stock)
+            assert.isString(res.body.stockData[1].price)
+            assert.isNumber(res.body.stockData[1].rel_likes)
+            assert.equal(res.body.stockData[0].stock, "GOOG")
+            assert.equal(res.body.stockData[1].stock, "MSFT")
+          done();
+        });
         
       });
       
       test('2 stocks with like', function(done) {
+        chai.request(server)
+          .get('/api/stock-prices')
+          .query({stock:['goog', 'msft'], like:"true"})
+          .end(function(err, res){
+            assert.equal(res.status, 200)
+            assert.isObject(res.body)
+            assert.property(res.body, "stockData")
+            assert.isArray(res.body.stockData)
+            assert.property(res.body.stockData[0], "stock")
+            assert.property(res.body.stockData[0], "price")
+            assert.property(res.body.stockData[0], "rel_likes")
+            assert.property(res.body.stockData[1], "stock")
+            assert.property(res.body.stockData[1], "price")
+            assert.property(res.body.stockData[1], "rel_likes")
+            assert.isString(res.body.stockData[0].stock)
+            assert.isString(res.body.stockData[0].price)
+            assert.isNumber(res.body.stockData[0].rel_likes)
+            assert.isString(res.body.stockData[1].stock)
+            assert.isString(res.body.stockData[1].price)
+            assert.isNumber(res.body.stockData[1].rel_likes)
+            assert.equal(res.body.stockData[0].stock, "GOOG")
+            assert.equal(res.body.stockData[1].stock, "MSFT")
+          done();
+        });
         
       });
       
